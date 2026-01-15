@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoSync Pro | AI Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #00ffa3; --bg: #050608; --card: rgba(255, 255, 255, 0.02); --border: rgba(255, 255, 255, 0.08); --error: #ff3366; --warning: #ffcc00; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: #fff; height: 100vh; display: flex; overflow: hidden; }
+        
+        nav { width: 70px; background: #000; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 25px 0; }
+        main { flex: 1; padding: 30px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; background: radial-gradient(circle at 0% 0%, #0a110f 0%, transparent 50%); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.2rem; font-weight: 800; letter-spacing: -1px; }
+        .upload-btn { background: var(--accent); color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .upload-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,255,163,0.3); }
+
+        .top-grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; backdrop-filter: blur(10px); transition: 0.5s; position: relative; overflow: hidden; }
+        
+        .big-val { font-size: 4.5rem; font-weight: 800; color: var(--accent); margin: 5px 0; letter-spacing: -3px; }
+        .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); }
+
+        .chart-box { height: 180px; margin-top: 15px; }
+        .status-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; font-weight: 600; }
+        
+        /* Error Log Styling */
+        #log-screen { font-family: 'Courier New', monospace; font-size: 0.75rem; color: #aaa; height: 150px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 1px solid var(--border); line-height: 1.5; }
+        .log-entry { margin-bottom: 8px; border-left: 2px solid var(--accent); padding-left: 8px; }
+        .log-error { border-left-color: var(--error); color: var(--error); }
+
+        .mistake-tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: var(--error); color: #fff; margin-left: 10px; font-weight: 800; }
+        
+        .suggestion-box { border-left: 3px solid var(--accent); padding: 15px; background: rgba(0,255,163,0.02); margin-top: 10px; font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.8); border-radius: 0 10px 10px 0; }
+
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div style="width:35px; height:35px; background:var(--accent); border-radius:10px; box-shadow: 0 0 15px var(--accent);"></div>
+</nav>
+
+<main>
+    <div class="header">
+        <div class="logo">ECOSYNC<span style="color:var(--accent)">.NEURAL</span></div>
+        <button class="upload-btn" onclick="triggerUpload()">SYNC CORE ANALYTICS</button>
+    </div>
+
+    <div class="top-grid">
+        <div class="card" id="main-stat-card">
+            <div class="label">Efficiency Core</div>
+            <div class="big-val" id="energy-val">--%</div>
+            <div id="status-tag" class="pulse" style="color:var(--accent); font-weight:800; font-size:0.8rem">SYSTEM READY</div>
+        </div>
+
+        <div class="card">
+            <div class="label">Global Network Nodes</div>
+            <div style="margin-top:10px;">
+                <div class="status-row">North America <span id="na-status" style="color:var(--accent)">READY</span></div>
+                <div class="status-row">Europe Union <span id="eu-status" style="color:var(--accent)">READY</span></div>
+                <div class="status-row">Asia South <span id="asia-status" style="color:var(--accent)">READY</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="label">Security Protocol</div>
+            <div style="display:flex; gap:30px; margin-top:15px; margin-bottom: 10px;">
+                <div><div class="label" style="font-size:0.55rem">Firewall</div><div id="fw-txt" style="font-weight:800; font-size: 1.1rem;">--</div></div>
+                <div><div class="label" style="font-size:0.55rem">Encryption</div><div id="enc-txt" style="font-weight:800; font-size: 1.1rem;">--</div></div>
+            </div>
+            <div class="chart-box" style="height:100px"><canvas id="radarChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="top-grid" style="grid-template-columns: 1.5fr 1.5fr;">
+        <div class="card">
+            <div class="label">Neural Performance Trend</div>
+            <div class="chart-box"><canvas id="lineChart"></canvas></div>
+        </div>
+        <div class="card" style="border-color: rgba(255, 51, 102, 0.2);">
+            <div class="label" style="display:flex; justify-content: space-between;">
+                Live Anomaly Stream 
+                <span id="error-count" style="color:var(--error); font-weight:800;">0 ISSUES</span>
+            </div>
+            <div id="log-screen" style="margin-top:15px;">
+                <div class="log-entry">> Initializing neural link...</div>
+                <div class="log-entry">> Awaiting data source for mistake analysis...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="suggestion-card">
+        <div class="label">AI Security & Optimization Insight (Mistake Resolution)</div>
+        <div id="suggestion-text" class="suggestion-box">Upload your <b>server.js</b> file to identify critical coding mistakes and security leaks.</div>
+    </div>
+</main>
+
+<script>
+    let lineChart, radarChart;
+
+    function initCharts(lineData = [0,0,0,0,0,0], radarData = [20,20,20,20,20], color = '#00ffa3') {
+        if(lineChart) lineChart.destroy();
+        lineChart = new Chart(document.getElementById('lineChart'), {
+            type: 'line',
+            data: { labels: ['T-5','T-4','T-3','T-2','T-1','NOW'], datasets: [{ data: lineData, borderColor: color, tension: 0.4, borderWidth: 3, pointRadius: 2, fill: true, backgroundColor: color + '15' }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#444' } } } }
+        });
+
+        if(radarChart) radarChart.destroy();
+        radarChart = new Chart(document.getElementById('radarChart'), {
+            type: 'radar',
+            data: { labels: ['Security', 'Performance', 'Stability', 'Logic', 'Sync'], datasets: [{ data: radarData, borderColor: color, backgroundColor: color + '33', borderWidth: 1 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, ticks: { display: false }, pointLabels: { color: '#444' } } } }
+        });
+    }
+
+    window.onload = () => initCharts();
+
+    function addLog(message, type = "normal") {
+        const logBox = document.getElementById('log-screen');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type === "error" ? "log-error" : ""}`;
+        const time = new Date().toLocaleTimeString();
+        entry.innerHTML = `<span style="opacity:0.5">[${time}]</span> ${message}`;
+        logBox.prepend(entry);
+    }
+
+    async function triggerUpload() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = async e => {
+            const btn = document.querySelector('.upload-btn');
+            btn.innerText = "SCANNING FOR MISTAKES...";
+            
+            const formData = new FormData();
+            formData.append('file', e.target.files[0]);
+
+            try {
+                // Yahan aap apna backend URL dalien
+                const res = await fetch('http://127.0.0.1:5005/analyze', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                const isCrit = data.status === "Critical" || data.energy_score < 60;
+                const themeColor = isCrit ? "#ff3366" : "#00ffa3";
+                
+                // Dashboard Update
+                document.getElementById('energy-val').innerText = data.energy_score + "%";
+                document.getElementById('energy-val').style.color = themeColor;
+                document.getElementById('status-tag').innerText = data.status.toUpperCase();
+                document.getElementById('status-tag').style.color = themeColor;
+                
+                // Show Mistakes in Suggestion Box
+                document.getElementById('suggestion-text').innerHTML = `<b>MISTAKES DETECTED:</b><br>${data.mistakes_list || data.suggestion}`;
+                
+                initCharts(data.chart_data, data.radar_data, themeColor);
+
+                // Update Logs based on mistakes
+                if(data.mistakes_array) {
+                    data.mistakes_array.forEach(m => addLog(`ANOMALY: ${m}`, "error"));
+                    document.getElementById('error-count').innerText = `${data.mistakes_array.length} ISSUES FOUND`;
+                }
+
+                // Security & Regions
+                document.getElementById('fw-txt').innerText = data.security.firewall;
+                document.getElementById('enc-txt').innerText = data.security.encryption;
+                
+                ['na', 'eu', 'asia'].forEach(r => {
+                    const el = document.getElementById(`${r}-status`);
+                    el.innerText = data.regions[r].toUpperCase();
+                    el.style.color = data.regions[r] === "Stable" ? "#00ffa3" : "#ff3366";
+                });
+
+            } catch (err) { 
+                addLog("CONNECTION BREACH: AI Core offline", "error");
+            } finally { 
+                btn.innerText = "SYNC CORE ANALYTICS";
+            }
+        };
+        input.click();
+    }
+</script>
+</body>
+</html>
