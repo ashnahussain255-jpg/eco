@@ -27,7 +27,8 @@ def scan_file_for_mistakes(content):
 
 @app.route('/analyze', methods=['POST'])
 def analyze_data():
-    if 'file' not in request.files: return jsonify({"error": "No file"}), 400
+    if 'file' not in request.files: 
+        return jsonify({"error": "No file"}), 400
     
     file = request.files['file']
     try:
@@ -36,19 +37,16 @@ def analyze_data():
         
         # REAL LOGIC: Score calculation
         mistake_count = len(mistakes)
-        # Agar koi ghalti nahi to 100%, warna har ghalti par 25% kam
         score = max(10, 100 - (mistake_count * 25))
-        
         status = "Stable" if mistake_count == 0 else "Critical"
         
-        # Radar Data: [Security, Performance, Stability, Logic, Sync]
-        # Har category ko mistake ke hisab se real values dena
+        # Radar Data
         radar = [
-            20 if "SECURITY" in str(mistakes) else 95, # Security
-            score,                                     # Performance
-            40 if "CRITICAL" in str(mistakes) else 90, # Stability
-            30 if "LOGIC" in str(mistakes) else 95,    # Logic
-            30 if "SYNC" in str(mistakes) else 90      # Sync
+            20 if "SECURITY" in str(mistakes) else 95,
+            score,
+            40 if "CRITICAL" in str(mistakes) else 90,
+            30 if "LOGIC" in str(mistakes) else 95,
+            30 if "SYNC" in str(mistakes) else 90
         ]
 
         return jsonify({
@@ -72,5 +70,8 @@ def analyze_data():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# --- YEH SECTION RENDER KE LIYE ZAROORI HAI ---
 if __name__ == '__main__':
-    app.run(debug=True, port=5005)
+    # Render automatically port assign karta hai
+    port = int(os.environ.get("PORT", 5005))
+    app.run(host='0.0.0.0', port=port)
