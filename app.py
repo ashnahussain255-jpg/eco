@@ -1,64 +1,81 @@
 import os, re, json
+import google.generativeai as genai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-def scan_file_for_mistakes(content):
-    mistakes = []
-    if "<<<<<<< HEAD" in content or "=======" in content:
-        mistakes.append("CRITICAL: Git Merge Conflict markers detected.")
-    if "ashna@123" in content or re.search(r'pass:\s*["\'].+["\']', content):
-        mistakes.append("SECURITY: Hardcoded credentials found.")
-    if 'JSON.parse("./' in content:
-        mistakes.append("LOGIC: Invalid Firebase JSON parsing method.")
-    if "axios" in content and "nodemailer" in content:
-        mistakes.append("SYNC: Redundant email protocols.")
-    return mistakes
+# --- Gemini Configuration ---
+GEMINI_API_KEY = "AIzaSyBI3rUVdXleb1skfn6UZaK3VAihED9rg7c" 
+genai.configure(api_key=GEMINI_API_KEY)
+model = genai.GenerativeModel('gemini-1.5-flash')
 
-# Route ko "/" rakhein taake base URL par call kaam kare
+def get_gemini_analysis(code_content, filename):
+    try:
+        # Gemini ko instruction di ja rahi hai ke wo JSON format mein result de
+        prompt = f"""
+        Act as an expert Security Researcher and Senior Developer. 
+        Analyze the following code from the file '{filename}'.
+        
+        Identify any:
+        1. Security vulnerabilities (hardcoded keys, injection risks).
+        2. Syntax or logical errors.
+        3. Performance bottlenecks.
+
+        Return ONLY a JSON object with this structure:
+        {{
+            "mistakes": ["List each specific error found"],
+            "suggestion": "A 2-sentence optimization strategy",
+            "score_deduction": 15 (integer value to deduct per mistake)
+        }}
+
+        Code Content:
+        {code_content[:3000]}
+        """
+        
+        response = model.generate_content(prompt)
+        
+        # Cleaning response text to ensure it's valid JSON
+        json_text = response.text.strip().replace('```json', '').replace('```', '')
+        return json.loads(json_text)
+    except Exception as e:
+        print(f"Gemini Error: {e}")
+        return {
+            "mistakes": ["AI Uplink Busy: Could not perform deep neural scan."],
+            "suggestion": "Ensure code integrity manually while AI nodes resync.",
+            "score_deduction": 0
+        }
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'GET':
-        return "EcoSync AI Core is Online."
+        return "EcoSync AI Core (Gemini Fully Integrated) is Online."
     
     if 'file' not in request.files: 
-        return jsonify({"error": "No file"}), 400
+        return jsonify({"error": "No file uploaded"}), 400
     
     file = request.files['file']
     try:
         content = file.read().decode('utf-8', errors='ignore')
-        mistakes = scan_file_for_mistakes(content)
         
+        # 1. Gemini se poora Audit karwao
+        analysis = get_gemini_analysis(content, file.filename)
+        
+        mistakes = analysis.get("mistakes", [])
         mistake_count = len(mistakes)
-        score = max(10, 100 - (mistake_count * 25))
-        status = "Stable" if mistake_count == 0 else "Critical"
         
-        radar = [
-            20 if "SECURITY" in str(mistakes) else 95,
-            score,
-            40 if "CRITICAL" in str(mistakes) else 90,
-            30 if "LOGIC" in str(mistakes) else 95,
-            30 if "SYNC" in str(mistakes) else 90
-        ]
+        # 2. Dynamic Score Calculation
+        # Har galti par score kam hoga
+        score = max(5, 100 - (mistake_count * analysis.get("score_deduction", 10)))
 
         return jsonify({
             "energy_score": score,
-            "status": status,
+            "status": "Healthy" if mistake_count == 0 else "Critical",
             "mistakes_array": mistakes,
-            "mistakes_list": "<br>".join([f"• {m}" for m in mistakes]) if mistakes else "System pathways optimal.",
-            "chart_data": [score-5, score-2, score-8, score-4, score-1, score],
-            "radar_data": radar,
-            "regions": {
-                "na": "Stable" if mistake_count < 2 else "Critical",
-                "eu": "Stable" if mistake_count < 1 else "Critical",
-                "asia": "Stable" if mistake_count == 0 else "Critical"
-            },
-            "security": {
-                "firewall": "ACTIVE" if "SECURITY" not in str(mistakes) else "BREACHED", 
-                "encryption": "SECURE" if "SECURITY" not in str(mistakes) else "COMPROMISED"
-            }
+            "suggestion": analysis.get("suggestion", "System optimal."),
+            "ai_confidence": 98 if mistake_count == 0 else 85,
+            "chart_data": [score-8, score-4, score-12, score-3, score]
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
