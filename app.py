@@ -19,7 +19,11 @@ safety_settings = [
     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
 ]
 
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Model initialization - Sirf aik naam use karein
+model = genai.GenerativeModel(
+    model_name='gemini-1.5-flash',
+    safety_settings=safety_settings
+)
 
 def get_gemini_analysis(code_content, filename):
     try:
