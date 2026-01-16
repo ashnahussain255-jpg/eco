@@ -19,7 +19,7 @@ safety_settings = [
     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
 ]
 
-model = genai.GenerativeModel('gemini-1.5-flash', 'gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def get_gemini_analysis(code_content, filename):
     try:
