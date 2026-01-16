@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # --- Gemini Configuration ---
-GEMINI_API_KEY = "AIzaSyC134biKJMO5gNP8TFJYbsb--lViYgRvDg" 
+GEMINI_API_KEY = "AIzaSyBI3rUVdXleb1skfn6UZaK3VAihED9rg7c" 
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Safety settings ko disable karna zaroori hai taake AI code ko 'unsafe' keh kar block na kare
@@ -19,7 +19,7 @@ safety_settings = [
     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
 ]
 
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-1.5-flash', 'gemini-pro')
 
 def get_gemini_analysis(code_content, filename):
     try:
