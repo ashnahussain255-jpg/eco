@@ -62,17 +62,45 @@
         .download-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* --- MOBILE RESPONSIVE ADDITION --- */
+        /* --- MOBILE & SCREEN FIX --- */
         @media (max-width: 850px) {
             body { flex-direction: column; overflow-y: auto; }
-            nav { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 15px 20px; flex-direction: row; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-            .nav-items, nav div:last-child { display: none; }
-            .brand-logo { margin-bottom: 0; }
-            main { padding: 20px; overflow: visible; }
+            
+            nav { 
+                width: 100%; height: auto; border-right: none; 
+                border-bottom: 1px solid var(--border); 
+                padding: 10px; flex-direction: column; 
+                position: sticky; top: 0; z-index: 1000;
+                background: #000;
+            }
+
+            .brand-logo { margin-bottom: 15px; font-size: 1rem; justify-content: center; }
+
+            /* Categories ko mobile par line mein dikhane ke liye */
+            .nav-items { 
+                display: flex; 
+                width: 100%; 
+                overflow-x: auto; 
+                gap: 10px; 
+                padding-bottom: 5px;
+                scrollbar-width: none; /* Firefox */
+            }
+            .nav-items::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+            .nav-link { 
+                white-space: nowrap; 
+                padding: 8px 15px; 
+                font-size: 0.8rem; 
+                background: rgba(255,255,255,0.03);
+            }
+
+            nav div:last-child { display: none; } /* Clock hide on mobile for space */
+
+            main { padding: 15px; overflow: visible; }
             .stats-grid { grid-template-columns: 1fr; }
-            .header { flex-direction: column; gap: 15px; }
-            .header div:last-child { text-align: left !important; width: 100%; }
-            .btn-container { width: 100%; justify-content: space-between; }
-            .primary-btn, .download-btn { flex: 1; padding: 12px 10px; font-size: 0.75rem; text-align: center; }
+            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-container { width: 100%; display: flex; }
+            .primary-btn, .download-btn { flex: 1; text-align: center; padding: 10px; font-size: 0.8rem; }
             .stat-value { font-size: 2rem; }
         }
 
