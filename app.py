@@ -6,27 +6,25 @@ import google.generativeai as genai
 app = Flask(__name__)
 CORS(app)
 
-# Configuration
+# API Configuration
 GEMINI_API_KEY = "AIzaSyCHAQTxUGj4iiuI50AvU8IvG5TQ8ABPX7A"
 genai.configure(api_key=GEMINI_API_KEY)
 
 def get_gemini_analysis(code_content):
-    # HUM DONO MODELS TRY KAREIN GE
-    # Agar 1.5 Flash nahi mila to 'gemini-pro' (Stable) chal jaye ga
+    # Dono stable models try karein ge
     for model_name in ['gemini-1.5-flash', 'gemini-pro']:
         try:
             model = genai.GenerativeModel(model_name)
             prompt = f"Return ONLY JSON: {{'mistakes': [], 'suggestion': ''}}. Audit: {code_content[:1500]}"
-            
             response = model.generate_content(prompt)
             
             if response.text:
-                json_match = re.search(r'\{.*\}', response.text, re.DOTALL)
-                if json_match:
-                    return json.loads(json_match.group(0))
+                match = re.search(r'\{.*\}', response.text, re.DOTALL)
+                if match:
+                    return json.loads(match.group(0))
         except Exception as e:
-            print(f"DEBUG: Model {model_name} failed: {e}")
-            continue # Agla model try karo
+            print(f"DEBUG: {model_name} failed: {e}")
+            continue
     return None
 
 @app.route('/', methods=['POST', 'GET'])
@@ -45,16 +43,15 @@ def index():
             return jsonify({
                 "energy_score": 100,
                 "status": "Healthy",
-                "mistakes_array": ["API Handshake: Model mismatch"],
-                "suggestion": "Please check if Generative AI is enabled in your Google Console.",
+                "mistakes_array": ["API Handshake Failed"],
+                "suggestion": "Model sync issue. Please retry.",
                 "ai_confidence": 90.0
             })
 
-        mistakes = analysis.get("mistakes", [])
         return jsonify({
-            "energy_score": max(5, 100 - (len(mistakes) * 15)),
-            "status": "Healthy" if not mistakes else "Critical",
-            "mistakes_array": mistakes,
+            "energy_score": max(10, 100 - (len(analysis.get("mistakes", [])) * 15)),
+            "status": "Healthy" if not analysis.get("mistakes") else "Critical",
+            "mistakes_array": analysis.get("mistakes", []),
             "suggestion": analysis.get("suggestion", "System stable."),
             "ai_confidence": 98.5
         })
@@ -62,4 +59,5 @@ def index():
         return jsonify({"error": str(e)}), 200
 
 if __name__ == '__main__':
+    # Render default port 10000 use karta hai
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
