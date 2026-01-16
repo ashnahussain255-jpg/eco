@@ -244,62 +244,45 @@
         addLog("Audit report exported successfully.");
     }
 
-    async function triggerUpload() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.onchange = async (e) => {
-            const file = e.target.files[0];
-            const progBar = document.getElementById('progress-bar');
-            const aiBox = document.getElementById('ai-suggestion-box');
-            const statusPill = document.getElementById('status-pill');
-            const mainDot = document.getElementById('main-dot');
-            const downBtn = document.getElementById('download-report-btn');
-            document.getElementById('progress-container').style.display = "block";
-            progBar.style.width = "30%";
-            addLog(`Initializing neural uplink for: ${file.name}`);
-            const formData = new FormData();
-            formData.append('file', file);
-            try {
-                const res = await fetch('https://eco-ur13.onrender.com', { method: 'POST', body: formData });
-                progBar.style.width = "70%";
-                const data = await res.json();
-                progBar.style.width = "100%";
-                lastAnalysisData = { ...data, fileName: file.name, mistakes_count: data.mistakes_array ? data.mistakes_array.length : 0, mistakes_list: data.mistakes_array ? data.mistakes_array.join('\n- ') : "None" };
-                downBtn.disabled = false;
-                document.getElementById('energy-val').innerText = data.energy_score + "%";
-                const mistakes = data.mistakes_array ? data.mistakes_array.length : 0;
-                document.getElementById('error-count').innerText = mistakes;
-                if(mistakes > 0) {
-                    statusPill.innerText = "THREATS_DETECTED";
-                    statusPill.className = "status-pill danger";
-                    mainDot.className = "dot alert";
-                    document.getElementById('error-count').style.color = "var(--danger)";
-                    document.getElementById('ai-panel').className = "stat-card ai-panel danger";
-                    addLog(`Security Audit Failed: ${mistakes} anomalies found.`, true);
-                    data.mistakes_array.forEach(m => addLog(m, true));
-                } else {
-                    statusPill.innerText = "SYSTEM_HEALTHY";
-                    statusPill.className = "status-pill";
-                    mainDot.className = "dot";
-                    document.getElementById('error-count').style.color = "var(--brand)";
-                    document.getElementById('ai-panel').className = "stat-card ai-panel";
-                    addLog(`Neural scan successful. No anomalies.`);
-                }
-                let conf = 98 - (mistakes * 5);
-                document.getElementById('ai-conf-val').innerText = (conf < 30 ? 34 : conf) + "%";
-                if(data.suggestion || data.mistakes_list) {
-                    const raw = data.suggestion || data.mistakes_list;
-                    aiBox.innerHTML = `<strong>Neural Analysis Strategy:</strong><br>${raw.replace(/\n/g, '<br>• ')}`;
-                }
-            } catch (err) {
-                addLog("Uplink failed: Terminal connection lost.", true);
-                aiBox.innerText = "Offline: Neural Core is currently unreachable.";
-            } finally {
-                setTimeout(() => document.getElementById('progress-container').style.display = "none", 3000);
+async function triggerUpload() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+
+        addLog(`Uplinking ${file.name} to Gemini AI...`);
+        document.getElementById('progress-container').style.display = "block";
+        document.getElementById('progress-bar').style.width = "50%";
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('https://eco-ur13.onrender.com', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            document.getElementById('progress-bar').style.width = "100%";
+            document.getElementById('energy-val').innerText = data.energy_score + "%";
+            document.getElementById('error-count').innerText = data.mistakes_array.length;
+            document.getElementById('ai-conf-val').innerText = data.ai_confidence + "%";
+            
+            if(data.mistakes_array.length > 0) {
+                document.getElementById('status-pill').className = "status-pill danger";
+                document.getElementById('status-pill').innerText = "THREATS_DETECTED";
+                data.mistakes_array.forEach(m => addLog(m, true));
+            } else {
+                addLog("Neural Scan Complete: No anomalies.");
             }
-        };
-        input.click();
-    }
+            
+            document.getElementById('ai-suggestion-box').innerHTML = `<strong>Gemini Recommendation:</strong><br>${data.suggestion}`;
+            
+        } catch (err) {
+            addLog("Uplink failed: Check Render Logs.", true);
+        }
+    };
+    input.click();
+}
 
     function initChart() {
         if(netChart) netChart.destroy();
