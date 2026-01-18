@@ -16,18 +16,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
 
-        /* Professional Sidebar */
         nav { width: 280px; background: #000; border-right: 1px solid var(--border); padding: 32px 20px; display: flex; flex-direction: column; flex-shrink: 0; }
         .brand-logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.2rem; margin-bottom: 40px; }
         .dot { width: 10px; height: 10px; background: var(--brand); border-radius: 50%; box-shadow: 0 0 15px var(--brand); }
-        .dot.alert { background: var(--danger); box-shadow: 0 0 15px var(--danger); }
-
+        
         .nav-items { list-style: none; flex: 1; }
         .nav-link { color: var(--text-dim); text-decoration: none; font-size: 0.9rem; padding: 12px 15px; border-radius: 8px; cursor: pointer; display: block; margin-bottom: 5px; transition: 0.3s; }
         .nav-link.active { background: rgba(255,255,255,0.07); color: var(--text); border-left: 3px solid var(--brand); }
         .nav-link:hover:not(.active) { background: rgba(255,255,255,0.03); color: var(--text); }
 
-        /* Main Dashboard */
         main { flex: 1; padding: 40px; overflow-y: auto; background: linear-gradient(135deg, #09090b 0%, #020617 100%); }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: slideUp 0.4s ease-out; }
@@ -37,80 +34,34 @@
         .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 800; border: 1px solid var(--brand); color: var(--brand); }
         .status-pill.danger { border-color: var(--danger); color: var(--danger); }
 
-        /* Grid System */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px; }
         .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 25px; position: relative; overflow: hidden; }
         .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
         .stat-value { font-size: 2.5rem; font-weight: 800; margin-top: 10px; font-family: 'JetBrains Mono'; }
 
-        /* Special Recommendation Panel */
         .ai-panel { border-left: 4px solid var(--brand); background: rgba(16, 185, 129, 0.02); }
-        .ai-panel.danger { border-left-color: var(--danger); background: rgba(239, 68, 68, 0.02); }
-
-        /* Terminal Output */
-        .log-box { background: #000; border: 1px solid var(--border); border-radius: 12px; height: 300px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; overflow-y: auto; color: #71717a; border-top: 1px solid #333; }
+        .log-box { background: #000; border: 1px solid var(--border); border-radius: 12px; height: 300px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; overflow-y: auto; color: #71717a; }
         .log-line { margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.02); padding-bottom: 4px; }
         .log-ts { color: var(--brand); margin-right: 12px; }
         .log-msg.error { color: var(--danger); font-weight: 600; }
 
-        /* Buttons */
-        .btn-container { display: flex; gap: 10px; align-items: center; }
-        .primary-btn { background: #fff; color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .download-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
-        .download-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
-        .download-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* --- MOBILE RESPONSIVE ADDITION --- */
-        /* --- MOBILE & SCREEN FIX --- */
-        @media (max-width: 850px) {
-            body { flex-direction: column; overflow-y: auto; }
-            
-            nav { 
-                width: 100%; height: auto; border-right: none; 
-                border-bottom: 1px solid var(--border); 
-                padding: 10px; flex-direction: column; 
-                position: sticky; top: 0; z-index: 1000;
-                background: #000;
-            }
-
-            .brand-logo { margin-bottom: 15px; font-size: 1rem; justify-content: center; }
-
-            /* Categories ko mobile par line mein dikhane ke liye */
-            .nav-items { 
-                display: flex; 
-                width: 100%; 
-                overflow-x: auto; 
-                gap: 10px; 
-                padding-bottom: 5px;
-                scrollbar-width: none; /* Firefox */
-            }
-            .nav-items::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-
-            .nav-link { 
-                white-space: nowrap; 
-                padding: 8px 15px; 
-                font-size: 0.8rem; 
-                background: rgba(255,255,255,0.03);
-            }
-
-            nav div:last-child { display: none; } /* Clock hide on mobile for space */
-
-            main { padding: 15px; overflow: visible; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .btn-container { width: 100%; display: flex; }
-            .primary-btn, .download-btn { flex: 1; text-align: center; padding: 10px; font-size: 0.8rem; }
-            .stat-value { font-size: 2rem; }
-        }
-
-        #progress-container { display: none; margin-top: 15px; }
+        .primary-btn { background: #fff; color: #000; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .download-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+        
+        #progress-container { display: none; margin-top: 15px; width: 200px; }
         .bar-bg { height: 4px; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
         .bar-fill { width: 0%; height: 100%; background: var(--brand); transition: 0.3s; }
         
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 15px; color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        th { text-align: left; padding: 15px; color: var(--text-dim); font-size: 0.7rem; border-bottom: 1px solid var(--border); }
         td { padding: 15px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+
+        @media (max-width: 850px) {
+            body { flex-direction: column; overflow-y: auto; }
+            nav { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+            .nav-items { display: flex; overflow-x: auto; gap: 10px; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -133,41 +84,40 @@
         <div class="header">
             <div>
                 <h1 style="font-size: 2rem; letter-spacing: -1px;">Intelligence Core</h1>
-                <p style="color: var(--text-dim); margin-top: 5px;">Real-time neural auditing & anomaly detection</p>
+                <p style="color: var(--text-dim); margin-top: 5px;">Real-time AI auditing powered by Llama 3.1</p>
             </div>
             <div style="text-align: right;">
-                <span id="status-pill" class="status-pill">SYSTEM_HEALTHY</span>
-                <div class="btn-container" style="margin-top: 15px;">
-                    <button id="download-report-btn" class="download-btn" onclick="downloadAuditReport()" disabled>Download Report</button>
-                    <button class="primary-btn" onclick="triggerUpload()">UPLINK SOURCE</button>
+                <span id="status-pill" class="status-pill">SYSTEM_READY</span>
+                <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button id="download-report-btn" class="download-btn" onclick="downloadAuditReport()" disabled>Export Audit</button>
+                    <button class="primary-btn" onclick="triggerUpload()">UPLINK FILE</button>
                 </div>
                 <div id="progress-container"><div class="bar-bg"><div id="progress-bar" class="bar-fill"></div></div></div>
             </div>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card"><span class="stat-label">Efficiency Index</span><div class="stat-value" id="energy-val">--%</div></div>
-            <div class="stat-card"><span class="stat-label">Neural Anomalies</span><div class="stat-value" id="error-count" style="color: var(--brand);">0</div></div>
+            <div class="stat-card"><span class="stat-label">Efficiency Score</span><div class="stat-value" id="energy-val">--%</div></div>
+            <div class="stat-card"><span class="stat-label">Anomalies Detected</span><div class="stat-value" id="error-count" style="color: var(--brand);">0</div></div>
             <div class="stat-card"><span class="stat-label">AI Confidence</span><div class="stat-value" id="ai-conf-val">--</div></div>
         </div>
 
         <div id="ai-panel" class="stat-card ai-panel">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                <span style="font-size: 1.2rem;">🧠</span>
-                <span class="stat-label" style="color: inherit;">Neural Strategy Recommendation</span>
+                <span>🧠</span><span class="stat-label" style="color: inherit;">Neural Recommendation</span>
             </div>
             <div id="ai-suggestion-box" style="font-size: 0.95rem; line-height: 1.6; color: #d1d1d6;">
-                Ready for data ingestion. Please upload a source file to begin neural analysis.
+                Waiting for file uplink to initiate neural deep-scan...
             </div>
         </div>
 
         <div class="stat-card" style="margin-top: 25px; padding: 0;">
             <div style="padding: 15px 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
-                <span class="stat-label">Live Audit Output</span>
-                <span style="font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--brand);">ACTIVE_STREAM</span>
+                <span class="stat-label">Audit Log</span>
+                <span style="font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--brand);">SECURE_CONNECTION</span>
             </div>
             <div id="log-screen" class="log-box">
-                <div class="log-line"><span class="log-ts">></span> System initialized. All nodes operational.</div>
+                <div class="log-line"><span class="log-ts">></span> EcoSync Engine v3.1 initialized.</div>
             </div>
         </div>
     </div>
@@ -175,19 +125,21 @@
     <div id="network" class="tab-content">
         <div class="header"><h1>Network Matrix</h1></div>
         <div class="stats-grid">
-            <div class="stat-card"><span class="stat-label">Throughput</span><div class="stat-value" id="net-val">1.4 Gbps</div></div>
-            <div class="stat-card"><span class="stat-label">Global Latency</span><div class="stat-value">18ms</div></div>
+            <div class="stat-card"><span class="stat-label">Active Throughput</span><div class="stat-value" id="net-val">0.0 Gbps</div></div>
+            <div class="stat-card"><span class="stat-label">Uplink Status</span><div class="stat-value" id="uplink-status" style="font-size: 1.5rem; color: var(--brand);">STANDBY</div></div>
         </div>
         <div class="stat-card" style="height: 400px;"><canvas id="networkChart"></canvas></div>
     </div>
 
     <div id="security" class="tab-content">
-        <div class="header"><h1>Threat Detection Logs</h1></div>
+        <div class="header"><h1>Neural Threat Logs</h1></div>
         <div class="stat-card">
             <div style="overflow-x: auto;">
                 <table id="security-table">
-                    <thead><tr><th>Timestamp</th><th>Process</th><th>Detection_ID</th><th>Risk</th></tr></thead>
-                    <tbody></tbody>
+                    <thead><tr><th>Timestamp</th><th>Source_Audit</th><th>Anomaly_ID</th><th>Risk_Level</th></tr></thead>
+                    <tbody>
+                        <tr><td colspan="4" style="text-align:center; color:var(--text-dim)">No threats detected in current session.</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -196,25 +148,12 @@
 
 <script>
     let netChart;
-    let lastAnalysisData = null; 
+    let lastAnalysisData = null;
 
+    // Live Clock
     setInterval(() => {
-        const now = new Date();
-        document.getElementById('live-clock').innerText = now.toTimeString().split(' ')[0];
-        if(document.getElementById('network').classList.contains('active')) {
-            document.getElementById('net-val').innerText = (Math.random() * (1.9 - 1.1) + 1.1).toFixed(2) + " Gbps";
-        }
+        document.getElementById('live-clock').innerText = new Date().toTimeString().split(' ')[0];
     }, 1000);
-
-    setInterval(() => {
-        const table = document.querySelector('#security-table tbody');
-        if(!table) return;
-        const row = table.insertRow(0);
-        const processes = ['Root_Scanner', 'Neural_Handshake', 'SQL_Guard', 'Auth_Relay'];
-        const risk = Math.random() > 0.8 ? 'HIGH' : 'LOW';
-        row.innerHTML = `<td>${new Date().toLocaleTimeString()}</td><td>${processes[Math.floor(Math.random()*processes.length)]}</td><td>#${Math.floor(Math.random()*9000+1000)}</td><td style="color:${risk === 'HIGH' ? 'var(--danger)' : 'var(--brand)'}">${risk}</td>`;
-        if(table.rows.length > 10) table.deleteRow(10);
-    }, 3000);
 
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content, .nav-link').forEach(el => el.classList.remove('active'));
@@ -227,84 +166,104 @@
         const screen = document.getElementById('log-screen');
         const line = document.createElement('div');
         line.className = 'log-line';
-        const ts = new Date().toLocaleTimeString().split(' ')[0];
-        line.innerHTML = `<span class="log-ts">[${ts}]</span> <span class="log-msg ${isError ? 'error' : ''}">${isError ? '✖ ' : '✔ '}${msg}</span>`;
+        line.innerHTML = `<span class="log-ts">[${new Date().toLocaleTimeString()}]</span> <span class="log-msg ${isError ? 'error' : ''}">${msg}</span>`;
         screen.prepend(line);
+    }
+
+    function updateSecurityTable(mistakes) {
+        const tbody = document.querySelector('#security-table tbody');
+        if (mistakes.length > 0) tbody.innerHTML = ''; // Clear empty message
+        
+        mistakes.forEach((m, i) => {
+            const row = tbody.insertRow(0);
+            row.innerHTML = `
+                <td>${new Date().toLocaleTimeString()}</td>
+                <td>${m.substring(0, 30)}...</td>
+                <td>#ANOM-${Math.floor(Math.random()*9000)}</td>
+                <td style="color:var(--danger); font-weight:bold;">HIGH</td>
+            `;
+        });
+    }
+
+    async function triggerUpload() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            addLog(`Initiating neural uplink for: ${file.name}`);
+            document.getElementById('progress-container').style.display = "block";
+            document.getElementById('progress-bar').style.width = "40%";
+            document.getElementById('uplink-status').innerText = "SYNCING...";
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('https://eco-ur13.onrender.com/', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                lastAnalysisData = { ...data, fileName: file.name };
+                
+                // Update UI Stats
+                document.getElementById('progress-bar').style.width = "100%";
+                document.getElementById('energy-val').innerText = data.energy_score + "%";
+                document.getElementById('error-count').innerText = data.mistakes_array.length;
+                document.getElementById('ai-conf-val').innerText = (data.ai_confidence || 98) + "%";
+                document.getElementById('net-val').innerText = (Math.random() * 2 + 1).toFixed(2) + " Gbps";
+                document.getElementById('uplink-status').innerText = "STABLE";
+                
+                // Handle Mistakes/Threats
+                if(data.mistakes_array.length > 0) {
+                    document.getElementById('status-pill').className = "status-pill danger";
+                    document.getElementById('status-pill').innerText = "THREATS_FOUND";
+                    addLog(`Alert: ${data.mistakes_array.length} anomalies detected!`, true);
+                    updateSecurityTable(data.mistakes_array);
+                } else {
+                    document.getElementById('status-pill').className = "status-pill";
+                    document.getElementById('status-pill').innerText = "OPTIMIZED";
+                    addLog("Neural Scan: No anomalies found in source.");
+                }
+
+                document.getElementById('ai-suggestion-box').innerHTML = `<strong>Llama 3.1 Strategy:</strong><br>${data.suggestion}`;
+                document.getElementById('download-report-btn').disabled = false;
+
+            } catch (err) {
+                addLog("Uplink failed: Check backend connection.", true);
+                document.getElementById('uplink-status').innerText = "FAILED";
+                document.getElementById('progress-bar').style.backgroundColor = "var(--danger)";
+            }
+        };
+        input.click();
     }
 
     function downloadAuditReport() {
         if(!lastAnalysisData) return;
-        const reportContent = `ECOSYNC PRO | NEURAL AUDIT REPORT\n==================================\nTimestamp: ${new Date().toLocaleString()}\nSource File: ${lastAnalysisData.fileName}\n----------------------------------\nMETRICS:\n- Efficiency Score: ${lastAnalysisData.energy_score}%\n- Anomalies Detected: ${lastAnalysisData.mistakes_count}\n- AI Neural Confidence: ${document.getElementById('ai-conf-val').innerText}\n\nANOMALIES LOG:\n${lastAnalysisData.mistakes_list || "No anomalies detected."}\n\nNEURAL STRATEGY RECOMMENDATION:\n${lastAnalysisData.suggestion || "System fully optimized."}\n==================================\nGenerated by EcoSync Pro AI Neural Center`;
-        const blob = new Blob([reportContent], { type: 'text/plain' });
+        const content = `ECOSYNC PRO AUDIT\nFile: ${lastAnalysisData.fileName}\nScore: ${lastAnalysisData.energy_score}%\nAnomalies: ${lastAnalysisData.mistakes_array.join(', ')}\nSuggestion: ${lastAnalysisData.suggestion}`;
+        const blob = new Blob([content], {type: 'text/plain'});
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Audit_Report_${lastAnalysisData.fileName.split('.')[0]}.txt`;
-        link.click();
-        addLog("Audit report exported successfully.");
+        const a = document.createElement('a');
+        a.href = url; a.download = 'audit_report.txt'; a.click();
     }
-
-async function triggerUpload() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
-
-        addLog(`Uplinking ${file.name} to Gemini AI...`);
-        document.getElementById('progress-container').style.display = "block";
-        document.getElementById('progress-bar').style.width = "50%";
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            // Added mode: 'cors' and proper error handling
-            const res = await fetch('https://eco-ur13.onrender.com/', { 
-                method: 'POST', 
-                body: formData,
-                mode: 'cors'
-            });
-            
-            if (!res.ok) {
-                throw new Error(`Server returned ${res.status}`);
-            }
-
-            const data = await res.json();
-            
-            document.getElementById('progress-bar').style.width = "100%";
-            document.getElementById('energy-val').innerText = data.energy_score + "%";
-            document.getElementById('error-count').innerText = data.mistakes_array.length;
-            document.getElementById('ai-conf-val').innerText = data.ai_confidence + "%";
-            
-            if(data.mistakes_array.length > 0 && data.status === "Critical") {
-                document.getElementById('status-pill').className = "status-pill danger";
-                document.getElementById('status-pill').innerText = "THREATS_DETECTED";
-                data.mistakes_array.forEach(m => addLog(m, true));
-            } else {
-                document.getElementById('status-pill').className = "status-pill";
-                document.getElementById('status-pill').innerText = "SYSTEM_HEALTHY";
-                addLog("Neural Scan Complete: All nodes synchronized.");
-            }
-            
-            document.getElementById('ai-suggestion-box').innerHTML = `<strong>Gemini Recommendation:</strong><br>${data.suggestion}`;
-            
-        } catch (err) {
-            console.error("Uplink Error:", err);
-            addLog("Uplink failed: Server connection timed out.", true);
-            document.getElementById('progress-bar').style.backgroundColor = "var(--danger)";
-        }
-    };
-    input.click();
-}
 
     function initChart() {
         if(netChart) netChart.destroy();
         const ctx = document.getElementById('networkChart').getContext('2d');
         netChart = new Chart(ctx, {
             type: 'line',
-            data: { labels: Array(12).fill(''), datasets: [{ label: 'Traffic Flow', data: Array(12).fill(0).map(() => Math.random() * 50 + 50), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.05)', fill: true, tension: 0.4 }] },
-            options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
+            data: { 
+                labels: Array(12).fill(''), 
+                datasets: [{ 
+                    label: 'Neural Data Flow', 
+                    data: Array(12).fill(0).map(() => Math.random() * 40 + 60), 
+                    borderColor: '#10b981', 
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)', 
+                    fill: true, 
+                    tension: 0.4 
+                }] 
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } } }
         });
     }
 </script>
