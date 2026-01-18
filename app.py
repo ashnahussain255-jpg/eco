@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # API Key - Free Tier
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyCHAQTxUGj4iiuI50AvU8IvG5TQ8ABPX7A")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyCWIfLJxJ9_7Kp4i8mL-s0xzeutEnTiOkE")
 genai.configure(api_key=GEMINI_API_KEY)
 
 def get_gemini_analysis(code_content):
