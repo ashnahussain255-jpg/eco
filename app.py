@@ -5,7 +5,8 @@ import google.generativeai as genai
 from google.generativeai.types import RequestOptions
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}) 
+# Ya "*" ki jagah apni github.io wali URL likhein safety ke liye
 
 # API Configuration
 GEMINI_API_KEY = "AIzaSyCHAQTxUGj4iiuI50AvU8IvG5TQ8ABPX7A"
