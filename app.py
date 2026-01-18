@@ -1,7 +1,7 @@
 import os, json, re, requests
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-
+import psutil # Isay top par import karein
 app = Flask(__name__)
 # Sab origins ko allow kiya hai taake GitHub Pages se error na aaye
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -44,7 +44,25 @@ def get_groq_analysis(code_content):
     except Exception as e:
         print(f"DEBUG System Error: {str(e)}")
     return None
-
+@app.route('/system-stats', methods=['GET'])
+def get_stats():
+    try:
+        # Real CPU aur RAM usage
+        cpu = psutil.cpu_percent(interval=1)
+        ram = psutil.virtual_memory().percent
+        
+        # Real Network Throughput
+        net = psutil.net_io_counters()
+        total_traffic = (net.bytes_sent + net.bytes_recv) / (1024 * 1024) # MB mein
+        
+        return jsonify({
+            "cpu_usage": f"{cpu}%",
+            "ram_usage": f"{ram}%",
+            "network_mb": f"{round(total_traffic, 2)} MB",
+            "status": "ACTIVE"
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 @app.route('/', methods=['POST', 'GET', 'OPTIONS'])
 def index():
     if request.method == 'OPTIONS':
