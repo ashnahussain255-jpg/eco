@@ -259,7 +259,17 @@ async function triggerUpload() {
         formData.append('file', file);
 
         try {
-          const res = await fetch('https://eco-ur13.onrender.com/', { method: 'POST', body: formData });
+            // Added mode: 'cors' and proper error handling
+            const res = await fetch('https://eco-ur13.onrender.com/', { 
+                method: 'POST', 
+                body: formData,
+                mode: 'cors'
+            });
+            
+            if (!res.ok) {
+                throw new Error(`Server returned ${res.status}`);
+            }
+
             const data = await res.json();
             
             document.getElementById('progress-bar').style.width = "100%";
@@ -267,18 +277,22 @@ async function triggerUpload() {
             document.getElementById('error-count').innerText = data.mistakes_array.length;
             document.getElementById('ai-conf-val').innerText = data.ai_confidence + "%";
             
-            if(data.mistakes_array.length > 0) {
+            if(data.mistakes_array.length > 0 && data.status === "Critical") {
                 document.getElementById('status-pill').className = "status-pill danger";
                 document.getElementById('status-pill').innerText = "THREATS_DETECTED";
                 data.mistakes_array.forEach(m => addLog(m, true));
             } else {
-                addLog("Neural Scan Complete: No anomalies.");
+                document.getElementById('status-pill').className = "status-pill";
+                document.getElementById('status-pill').innerText = "SYSTEM_HEALTHY";
+                addLog("Neural Scan Complete: All nodes synchronized.");
             }
             
             document.getElementById('ai-suggestion-box').innerHTML = `<strong>Gemini Recommendation:</strong><br>${data.suggestion}`;
             
         } catch (err) {
-            addLog("Uplink failed: Check Render Logs.", true);
+            console.error("Uplink Error:", err);
+            addLog("Uplink failed: Server connection timed out.", true);
+            document.getElementById('progress-bar').style.backgroundColor = "var(--danger)";
         }
     };
     input.click();
