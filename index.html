@@ -259,7 +259,7 @@ async function triggerUpload() {
         formData.append('file', file);
 
         try {
-            const res = await fetch('https://eco-ur13.onrender.com', { method: 'POST', body: formData });
+          const res = await fetch('https://eco-ur13.onrender.com/', { method: 'POST', body: formData });
             const data = await res.json();
             
             document.getElementById('progress-bar').style.width = "100%";
